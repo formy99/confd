@@ -20,7 +20,6 @@ filter calico_export_to_bgp_peers {
 {{end}}
   reject;
 }
-
 filter calico_kernel_programming {
 {{- $reject_key := "/rejectcidrsv6"}}
 {{- if ls $reject_key}}
@@ -33,6 +32,7 @@ filter calico_kernel_programming {
   {{- end}}
 
 {{- end}}
+{{$network_key := printf "/bgp/v1/host/%s/network_v6" (getenv "NODENAME")}}
 {{- if exists $network_key}}{{$network := getv $network_key}}
 {{range ls "/v1/ipam/v4/pool"}}{{$data := json (getv (printf "/v1/ipam/v4/pool/%s" .))}}
   if ( net ~ {{$data.cidr}} ) then {
