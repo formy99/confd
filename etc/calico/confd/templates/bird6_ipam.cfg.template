@@ -32,16 +32,14 @@ filter calico_kernel_programming {
   {{- end}}
 
 {{- end}}
-{{$network_key := printf "/bgp/v1/host/%s/network_v6" (getenv "NODENAME")}}
-{{- if exists $network_key}}{{$network := getv $network_key}}
-{{range ls "/v1/ipam/v4/pool"}}{{$data := json (getv (printf "/v1/ipam/v4/pool/%s" .))}}
+
+{{range ls "/v1/ipam/v6/pool"}}{{$data := json (getv (printf "/v1/ipam/v6/pool/%s" .))}}
   if ( net ~ {{$data.cidr}} ) then {
 {{- if $data.vxlan_mode}}
     # Don't program VXLAN routes into the kernel - these are handled by Felix.
     reject;
+{{- end}}
   }
-  {{- end}}
-  {{end}}
-  {{- end}}{{/* End of 'exists $network_key' */}}
+{{end}}
   accept;                                  {{- /* Destination is not in any ipPool, accept  */}}
 }
